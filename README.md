@@ -21,6 +21,8 @@ the delay loop is randomly time shifted based on the probability from the `spin`
 
 the KEY2/3 are used to quickly speed up/down the bpm to 1/3 intervals to get some cool polyrhythms (good for drums).
 
+you can use KEY1+KEY2 to mute incoming audio.
+
 ## thanks
 
 this would not have been possible without the stellar [softcut tutorial](https://monome.org/docs/norns/softcut/) and inspiration of randomizing speed shifts from [bounds](https://llllllll.co/t/bounds/23336). 

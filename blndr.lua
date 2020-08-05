@@ -1,7 +1,7 @@
 --  ___.-.___
 --  =========
 --  | blndr |
---  | v0.1  |
+--  | v0.2  |
 --  |       |
 --  |  >|<  |
 --  \:\|/:/
@@ -16,6 +16,8 @@
 --
 -- 
 
+shift = 0
+monitor_linein = 1
 rate = 1.0
 feedback = 0.5
 bpm = 90
@@ -106,7 +108,10 @@ function enc(n,d)
 end
 
 function key(n,z)
-  if n==3 and z == 1 then
+  if shift ==1 and n==2 and z==1 then
+    monitor_linein = 1 - monitor_linein
+    audio.level_monitor(monitor_linein)
+  elseif n==3 and z == 1 then
     if mi < 6 then
       mi = mi + 1
       for i=1,2 do
@@ -122,6 +127,10 @@ function key(n,z)
       end
       m.time = 60/bpm*2*multipliers[mi]
     end
+  elseif n==1 and z==1 then
+	  shift = 1
+  elseif n==1 and z==0 then
+	  shift = 0
   end
   redraw()
 end
@@ -129,7 +138,13 @@ end
 function redraw()
   screen.clear()
   screen.move(10,10)
-  screen.text("blndr v0.1")
+  screen.text("blndr v0.2")
+  screen.move(118,10)
+  if monitor_linein == 0 then
+    screen.text("x")
+  else
+    screen.text(">")
+  end
   screen.move(10,30)
   screen.text("bpm: ")
   screen.move(118,30)
