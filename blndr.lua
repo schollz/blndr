@@ -27,11 +27,15 @@ mi = 3
 m = metro.init()
 m.time = 60/bpm*2*multipliers[mi]
 m.event = function()
-  local speeds = {-4,-2,-1,-0.5,0.5,1,2,4}
+  local speeds = {0.25, 0.5, 1, 2, 4}
   for i=1,2 do
       local new_speed = 1
       if math.random() < spin then
-        new_speed = speeds[math.random(#speeds)]
+        neg = 1
+        if math.random() < 0.5 then
+          neg = -1
+        end
+        new_speed = neg * speeds[math.random(#speeds)]
         if i == 2 then
           pan = pan * -1
           softcut.pan(2, pan)
@@ -71,8 +75,10 @@ function init()
   -- send output of channel 1 to channel 2
   softcut.level_cut_cut(1,2,1)
   softcut.pan(2, pan)
-  softcut.level(1,0.6)
-  softcut.level(2,0.4)
+  softcut.level(1,1.0)
+  softcut.level(2,0.8)
+  softcut.post_filter_lp(2,1.0)
+  softcut.post_filter_fc(2,18000)
 
 
   m:start()
