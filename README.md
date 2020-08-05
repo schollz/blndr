@@ -4,7 +4,7 @@ this is `blndr` - my first patch for [norns](https://monome.org/docs/norns/). `b
 
 ## demo
 
-<p align="center"><a href="https://www.instagram.com/p/CDfppIbBFnFc"><img src="https://user-images.githubusercontent.com/6550035/89372587-6621fd80-d69b-11ea-98e2-c013fac69565.png" alt="Demo of playing" width=80%></a></p>
+<p align="center"><a href="https://www.instagram.com/p/CDfppIbBFnF/?utm_source=ig_web_button_share_sheet"><img src="https://user-images.githubusercontent.com/6550035/89372587-6621fd80-d69b-11ea-98e2-c013fac69565.png" alt="Demo of playing" width=80%></a></p>
 
 ## requirements
 
