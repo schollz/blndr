@@ -29,7 +29,7 @@ mi = 3
 m = metro.init()
 m.time = 60/bpm*2*multipliers[mi]
 m.event = function()
-  local speeds = {0.25, 0.5, 1, 2, 4}
+  local speeds_sel = {0.125, 0.25, 0.5, 1}
   for i=1,2 do
       local new_speed = 1
       if math.random() < spin then
@@ -37,7 +37,12 @@ m.event = function()
         if math.random() < 0.5 then
           neg = -1
         end
-        new_speed = neg * speeds[math.random(#speeds)]
+	for i=1,10 do
+          new_speed = neg * speeds_sel[math.random(#speeds_sel)]
+	  if math.abs(new_speed/speeds[i]) <= 2 then
+	    break
+          end
+	end
         if i == 2 then
           pan = pan * -1
           softcut.pan(2, pan)
@@ -91,6 +96,7 @@ function enc(n,d)
     bpm = bpm + d*0.25
     for i=1,2 do
       softcut.loop_end(i,1+60/bpm*multipliers[mi])
+      softcut.level_slew_time(i,60/bpm*1.5)
       softcut.rate_slew_time(i,60/bpm*1.5)
       softcut.pan_slew_time(i,60/bpm*1.5)
     end
