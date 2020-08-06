@@ -32,6 +32,10 @@ m.event = function()
   local speeds_sel = {0.25, 0.25, 0.5, 0.75, 1}
   for i=1,2 do
       local new_speed = 1
+      -- if speeds[i] < 0 then
+      --   new_speed = -1
+      -- end
+      -- new_speed = speeds[i]
       if math.random() < spin then
         neg = 1
         if math.random() < 0.5 then
@@ -115,6 +119,10 @@ function enc(n,d)
     end
   elseif n==3 then
     spin = util.clamp(spin + d*0.01,0,1)
+    -- if spin == 0 then
+    --     softcut.rate(1,1)
+    --     softcut.rate(2,1)
+    -- end
   end
   redraw()
 end
