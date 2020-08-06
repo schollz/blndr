@@ -20,6 +20,7 @@
 --
 -- 
 
+screen_count = 0
 shift = 0
 monitor_linein = 1
 rate = 1.0
@@ -176,14 +177,17 @@ function key(n,z)
 end
 
 function redraw()
+  screen_count = 1 - screen_count
   screen.clear()
   screen.move(10,10)
-  screen.text("blndr v0.3")
-  screen.move(118,10)
+  blendertext = ">|<"
+  if screen_count == 1 then 
+    blendertext = "<|>"
+  end
+  screen.text(blendertext.." blndr v0.3")
+  screen.move(78,10)
   if monitor_linein == 0 then
-    screen.text("x")
-  else
-    screen.text(">")
+    screen.text("ext only")
   end
   screen.move(10,30)
   screen.text("bpm: ")
