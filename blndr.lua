@@ -29,7 +29,7 @@ mi = 3
 m = metro.init()
 m.time = 60/(bpm*multipliers[mi])
 m.event = function()
-  local speeds_sel = {0.25, 0.25, 0.5, 1}
+  local speeds_sel = {0.25, 0.25, 0.5, 0.75, 1}
   for i=1,2 do
       local new_speed = 1
       if math.random() < spin then
