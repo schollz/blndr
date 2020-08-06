@@ -19,17 +19,17 @@
 shift = 0
 monitor_linein = 1
 rate = 1.0
-feedback = 0.5
+feedback = 1.0
+spin = 1.0
 bpm = 90
 speeds = {1,1}
-spin = 0.25
 pan = 0.5
 multipliers = {1/3,2/3,1,1+1/3,1+2/3,2}
 mi = 3
 m = metro.init()
-m.time = 60/bpm*2*multipliers[mi]
+m.time = 60/(bpm*multipliers[mi])
 m.event = function()
-  local speeds_sel = {0.125, 0.25, 0.5, 1}
+  local speeds_sel = {0.25, 0.25, 0.5, 1}
   for i=1,2 do
       local new_speed = 1
       if math.random() < spin then
@@ -37,20 +37,23 @@ m.event = function()
         if math.random() < 0.5 then
           neg = -1
         end
-	for i=1,10 do
+      	for i=1,10 do
           new_speed = neg * speeds_sel[math.random(#speeds_sel)]
-	  if math.abs(new_speed/speeds[i]) <= 2 then
-	    break
+      	  if math.abs(new_speed/speeds[i]) <= 2 then
+      	    break
           end
-	end
-        if i == 2 then
+      	end
+        if i == 1 then
           pan = pan * -1
-          softcut.pan(2, pan)
+          softcut.pan(i, pan)
+        else
+          softcut.pan(i,-1*pan)
         end
       end
       if new_speed ~= speeds[i] then
         speeds[i] = new_speed
         softcut.rate(i,speeds[i])
+        m.time = 60/(bpm*multipliers[mi])/speeds[1]
       end
   end
 end
@@ -81,11 +84,14 @@ function init()
   softcut.level_input_cut(2,1,1.0)
   -- send output of channel 1 to channel 2
   softcut.level_cut_cut(1,2,1)
+  softcut.pan(1, -1*pan)
   softcut.pan(2, pan)
   softcut.level(1,feedback)
   softcut.level(2,feedback)
   softcut.post_filter_lp(2,1.0)
-  softcut.post_filter_fc(2,18000)
+  softcut.post_filter_fc(2,15000)
+  softcut.post_filter_lp(1,1.0)
+  softcut.post_filter_fc(1,15000)
 
 
   m:start()
@@ -95,12 +101,12 @@ function enc(n,d)
   if n==1 then
     bpm = bpm + d*0.25
     for i=1,2 do
-      softcut.loop_end(i,1+60/bpm*multipliers[mi])
-      softcut.level_slew_time(i,60/bpm*1.5)
-      softcut.rate_slew_time(i,60/bpm*1.5)
-      softcut.pan_slew_time(i,60/bpm*1.5)
+      softcut.loop_end(i,1+60/(bpm*multipliers[mi]))
+      softcut.level_slew_time(i,60/(bpm*multipliers[mi]))
+      softcut.rate_slew_time(i,60/(bpm*multipliers[mi])*0.5)
+      softcut.pan_slew_time(i,60/(bpm*multipliers[mi]))
     end
-    m.time = 60/bpm*2*multipliers[mi]
+    m.time = 60/(bpm*multipliers[mi])/speeds[1]
   elseif n==2 then
     feedback = util.clamp(feedback + d*0.01,0,1)
     for i=1,2 do
@@ -121,17 +127,17 @@ function key(n,z)
     if mi < 6 then
       mi = mi + 1
       for i=1,2 do
-        softcut.loop_end(i,1+60/bpm*multipliers[mi])
+        softcut.loop_end(i,1+60/(bpm*multipliers[mi]))
       end
-      m.time = 60/bpm*2*multipliers[mi]
+      m.time = 60/(bpm*multipliers[mi])/speeds[1]
     end
   elseif n==2 and z == 1 then
     if mi > 1 then
       mi = mi - 1
       for i=1,2 do
-        softcut.loop_end(i,1+60/bpm*multipliers[mi])
+        softcut.loop_end(i,1+60/(bpm*multipliers[mi]))
       end
-      m.time = 60/bpm*2*multipliers[mi]
+       m.time = 60/(bpm*multipliers[mi])/speeds[1]
     end
   elseif n==1 and z==1 then
 	  shift = 1
@@ -154,9 +160,9 @@ function redraw()
   screen.move(10,30)
   screen.text("bpm: ")
   screen.move(118,30)
-  screen.text_right(string.format("%.2f",bpm))
+  screen.text_right(string.format("%.2f",(bpm*multipliers[mi])))
   screen.move(10,40)
-  screen.text("feedback: ")
+  screen.text("level: ")
   screen.move(118,40)
   screen.text_right(string.format("%.2f",feedback))
   screen.move(10,50)
