@@ -68,8 +68,8 @@ function init()
     softcut.loop_end(i,1+60/bpm)
     softcut.position(i,1)
     softcut.play(i,1)
-    softcut.rec_level(i,feedback)
-    softcut.pre_level(i,feedback)
+    softcut.rec_level(i,0.5)
+    softcut.pre_level(i,0.5)
     softcut.rec(i,1)
     softcut.rate(i,1)
     softcut.rate_slew_time(i,60/bpm*1.5)
@@ -82,8 +82,8 @@ function init()
   -- send output of channel 1 to channel 2
   softcut.level_cut_cut(1,2,1)
   softcut.pan(2, pan)
-  softcut.level(1,1.0)
-  softcut.level(2,0.8)
+  softcut.level(1,feedback)
+  softcut.level(2,feedback)
   softcut.post_filter_lp(2,1.0)
   softcut.post_filter_fc(2,18000)
 
@@ -104,8 +104,8 @@ function enc(n,d)
   elseif n==2 then
     feedback = util.clamp(feedback + d*0.01,0,1)
     for i=1,2 do
-      softcut.rec_level(i,feedback)
-      softcut.pre_level(i,feedback)
+      softcut.level(1,feedback)
+      softcut.level(2,feedback)
     end
   elseif n==3 then
     spin = util.clamp(spin + d*0.01,0,1)
