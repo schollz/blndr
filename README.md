@@ -1,4 +1,4 @@
-<img src="https://user-images.githubusercontent.com/6550035/89369521-2f47e980-d693-11ea-8ca1-be69b9e00534.jpg">
+![3](https://user-images.githubusercontent.com/6550035/89541813-b12f3400-d7b3-11ea-9888-e2cd55f6d2e5.jpg)
 
 this is `blndr` - my first patch for [norns](https://monome.org/docs/norns/). `blndr` is a quantized delay with optional time bending effects in the stereo field.
 
@@ -13,15 +13,16 @@ this is `blndr` - my first patch for [norns](https://monome.org/docs/norns/). `b
 
 ## documentation
 
-the line-in audio is fed into a delay loop for a duration of one quarter note, so it automatically becomes quantized to the `bpm` (ENC1). the amount of delay can be dialed in with `feedback` (ENC2).
+the line-in audio is fed into a delay loop for a duration of one quarter note, so it automatically becomes quantized to the `bpm` (ENC1). the amount of delay can be dialed in with `level` (ENC2) and `feedback` (K1+ENC2).
 
-![main screen](https://user-images.githubusercontent.com/6550035/89369525-3111ad00-d693-11ea-887b-0543bb2efe6f.jpg)
+![4](https://user-images.githubusercontent.com/6550035/89541821-b2f8f780-d7b3-11ea-9d02-014460bd442e.jpg)
+
 
 the delay loop is randomly time shifted based on the probability from the `spin` parameter (ENC3). the audio from the delay loop is then fed into a second delay loop that is also time shifted and panned randomly.
 
-the KEY2/3 are used to quickly speed up/down the bpm to 1/3 intervals to get some cool polyrhythms (good for drums).
+the K2/3 are used to quickly speed up/down the bpm to 1/3 intervals to get some cool polyrhythms (good for drums).
 
-you can use KEY1+KEY2 to mute incoming audio.
+you can use K1+K2 to mute incoming audio.
 
 ## thanks
 
