@@ -18,6 +18,8 @@
 -- K2/K3 dec/inc bpm
 -- multiplier (good for drums)
 
+engine.name = 'InputTutorial'
+
 screen_count = 0
 shift = 0
 monitor_linein = 1
@@ -95,10 +97,36 @@ m.event = function()
   end
 end
 
+function repoll()
+  p_amp_in:update()
+end
+
+refresh_rate = 1.0 / 15
+re = metro.init()
+re.time = refresh_rate
+re.event = function()
+  repoll()
+  redraw()
+end
+re:start()
+
 function init()
   -- send audio input to softcut input
   audio.level_adc_cut(1)
   softcut.buffer_clear()
+
+
+  -- Listen
+  audio.monitor_mono()
+  engine.amp(1.0)
+  -- Poll in
+  p_amp_in = poll.set("amp_in_l")
+  p_amp_in.time = refresh_rate
+  p_amp_in.callback = function(val) 
+    if val > 0.05 then 
+      print(val)
+    end
+  end
 
   for i=1,2 do
     softcut.enable(i,1)
