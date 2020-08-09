@@ -1,11 +1,10 @@
---  ___.-.___
---  =========
---  | blndr |
---  | v0.4  |
---  |       |
---  |  >|<  |
---  \:\|/:/
---  /"""""\
+--  ___-___
+--  |       |  blndr 
+--  |       |  v0.4
+--  |       |  a quantized delay
+--  |  >|<.  |  w/ time bending
+--  \.\|/./
+--  /"""""\ 
 -- |_______|
 --
 -- llllllll.co/t/blndr
@@ -14,11 +13,10 @@
 -- E2 sets level
 -- E3 makes it spin
 -- K1+E2 sets feedback
--- K1+E1 toggles monitor
+-- K1+K2 toggles monitor
+-- K1+K3 toggles reverse mode
 -- K2/K3 dec/inc bpm
 -- multiplier (good for drums)
---
--- 
 
 screen_count = 0
 shift = 0
@@ -162,7 +160,11 @@ function enc(n,d)
       end
     else 
       for i=1,2 do
-        softcut.pan(i,((i*2)-3)*pan)
+        if reverse_mode == 0 then
+          softcut.pan(i,((i*2)-3)*pan)
+        else
+          softcut.pan(i,((i*2)-3)*spin)
+        end
       end
     end
   end
@@ -199,10 +201,10 @@ function key(n,z)
       for i=1,2 do 
         -- each channel listens to itself
         softcut.level_input_cut(i,i,1.0)
-        softcut.pan(i,0)
         softcut.level_slew_time(i,60/(bpm*multipliers[mi])*0.25)
         softcut.rate_slew_time(i,60/(bpm*multipliers[mi])*0.25)
         softcut.pan_slew_time(i,60/(bpm*multipliers[mi])*0.25)
+        softcut.pan(i,((i*2)-3)*spin)
       end
     end
     for i=1,2 do 
@@ -242,13 +244,13 @@ function redraw()
     blendertext = "<|>"
   end
   screen.text(blendertext.." blndr v0.4")
-  screen.move(78,10)
   if monitor_linein == 0 then
+    screen.move(78,20)
     screen.text("ext only")
   end
   if reverse_mode == 1 then
-    screen.move(78,20)
-    screen.text("eton")
+    screen.move(78,10)
+    screen.text("rev mode")
   end
   screen.move(10,30)
   screen.text("bpm: ")
@@ -265,13 +267,17 @@ function redraw()
     screen.text_right(string.format("%.2f",feedback))
   end
   screen.move(10,50)
-  screen.text("spin: ")
+  if reverse_mode == 0 then
+    screen.text("spin: ")
+  else
+    screen.text("pan: ")
+  end
   screen.move(118,50)
   screen.text_right(string.format("%.2f",spin))
-  screen.move(10,60)
-  screen.text("multiplier: ")
-  screen.move(118,60)
-  screen.text_right(string.format("x%.2f",multipliers[mi]))
+  -- screen.move(10,60)
+  -- screen.text("multiplier: ")
+  -- screen.move(118,60)
+  -- screen.text_right(string.format("x%.2f",multipliers[mi]))
   screen.update()
 end
 
