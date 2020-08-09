@@ -1,7 +1,7 @@
 --  ___.-.___
 --  =========
 --  | blndr |
---  | v0.3  |
+--  | v0.4  |
 --  |       |
 --  |  >|<  |
 --  \:\|/:/
@@ -32,9 +32,25 @@ speeds = {1,1}
 pan = 0.5
 multipliers = {1/3,2/3,1,1+1/3,1+2/3,2}
 mi = 3
+count = 1
+reverse_mode = 0
 m = metro.init()
 m.time = 60/(bpm*multipliers[mi])
 m.event = function()
+  if reverse_mode == 1 then
+    -- reverse mode
+    -- count goes between 1 and 2
+    count = 3 - count
+    speeds[count] = speeds[count]*-1
+    softcut.rate(count,speeds[count])
+    softcut.level(count,level)
+    softcut.level(3-count,0)
+    softcut.level_slew_time(count,60/(bpm*multipliers[mi])*0.25)
+    softcut.level_slew_time(3-count,60/(bpm*multipliers[mi])*0.02)
+    do return end
+  end
+
+
   -- event should run every 2 beats at current speed
   -- m.time = 60/(bpm*multipliers[mi])/math.abs(speeds[1])*2
   -- time   = 60s/min/(beats / minute)/(current speed)*(2 beats)
@@ -140,10 +156,15 @@ function enc(n,d)
     end
   elseif n==3 then
     spin = util.clamp(spin + d*0.01,0,1)
-    -- if spin == 0 then
-    --     softcut.rate(1,1)
-    --     softcut.rate(2,1)
-    -- end
+    if spin == 0 then
+      for i=1,2 do
+        softcut.pan(i,0)
+      end
+    else 
+      for i=1,2 do
+        softcut.pan(i,((i*2)-3)*pan)
+      end
+    end
   end
   redraw()
 end
@@ -152,6 +173,42 @@ function key(n,z)
   if shift ==1 and n==2 and z==1 then
     monitor_linein = 1 - monitor_linein
     audio.level_monitor(monitor_linein)
+  elseif shift == 1 and n ==3 and z == 1 then
+    -- toggle blndr mode / reverse mode
+    reverse_mode = 1 - reverse_mode
+    if reverse_mode == 0 then 
+      -- blndr mode 
+      softcut.buffer_clear()
+      m.time = 60/(bpm*multipliers[mi])/math.abs(speeds[1])*2
+      -- send input audio to channel 1
+      softcut.level_input_cut(1,1,1.0)
+      softcut.level_input_cut(2,1,1.0)
+      -- send output of channel 1 to channel 2
+      softcut.level_cut_cut(1,2,1)
+      for i=1,2 do 
+        softcut.pan(i,((i*2)-3)*pan)
+        softcut.level_slew_time(i,60/(bpm*multipliers[mi]))
+        softcut.rate_slew_time(i,60/(bpm*multipliers[mi])*0.5)
+      end
+    else
+      -- reverse mode
+      softcut.buffer_clear()
+      m.time = 60/(bpm*multipliers[mi])
+      -- clear output from 1 to 2
+      softcut.level_cut_cut(1,2,0)
+      for i=1,2 do 
+        -- each channel listens to itself
+        softcut.level_input_cut(i,i,1.0)
+        softcut.pan(i,0)
+        softcut.level_slew_time(i,60/(bpm*multipliers[mi])*0.25)
+        softcut.rate_slew_time(i,60/(bpm*multipliers[mi])*0.25)
+        softcut.pan_slew_time(i,60/(bpm*multipliers[mi])*0.25)
+      end
+    end
+    for i=1,2 do 
+      speeds[i] = 1
+      softcut.rate(i,1)
+    end
   elseif n==3 and z == 1 then
     if mi < 6 then
       mi = mi + 1
@@ -184,10 +241,14 @@ function redraw()
   if screen_count == 1 then 
     blendertext = "<|>"
   end
-  screen.text(blendertext.." blndr v0.3")
+  screen.text(blendertext.." blndr v0.4")
   screen.move(78,10)
   if monitor_linein == 0 then
     screen.text("ext only")
+  end
+  if reverse_mode == 1 then
+    screen.move(78,20)
+    screen.text("eton")
   end
   screen.move(10,30)
   screen.text("bpm: ")
