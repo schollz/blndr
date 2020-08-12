@@ -27,6 +27,10 @@ you can use K1+K2 to mute incoming audio.
 
 you can use K1+K3 to switch to reverse mode.
 
+## my other patches
+
+- [barcode](https://github.com/schollz/barcode): replays a buffer six times, at different levels & pans & rates & positions, modulated by lfos on every parameter.
+
 ## thanks
 
 this would not have been possible without the stellar [softcut tutorial](https://monome.org/docs/norns/softcut/) and inspiration of randomizing speed shifts from [bounds](https://llllllll.co/t/bounds/23336). 
