@@ -1,6 +1,6 @@
 --  ___-___
 --  |       |  blndr
---  |       |  v0.4
+--  |       |  v0.5
 --  |       |  a quantized delay
 --  |  >|<.  |  w/ time bending
 --  \.\|/./
@@ -18,6 +18,7 @@
 -- K2/K3 dec/inc bpm
 -- multiplier (good for drums)
 
+state_lastbpm=0
 screen_count=0
 shift=0
 monitor_linein=1
@@ -127,11 +128,18 @@ function init()
   softcut.level_cut_cut(1,2,1)
   
   m:start()
+  
+  updater=metro.init()
+  updater.time=0.25
+  updater.count=-1
+  updater.event=update_parms
+  updater:start()
+  
 end
 
-function enc(n,d)
-  if n==1 then
-    bpm=bpm+d*0.25
+function update_parms()
+  if bpm~=state_lastbpm then
+    state_lastbpm=bpm
     for i=1,2 do
       softcut.loop_end(i,1+60/(bpm*multipliers[mi]))
       softcut.level_slew_time(i,60/(bpm*multipliers[mi]))
@@ -139,6 +147,13 @@ function enc(n,d)
       softcut.pan_slew_time(i,60/(bpm*multipliers[mi]))
     end
     m.time=60/(bpm*multipliers[mi])/speeds[1]
+    redraw()
+  end
+end
+
+function enc(n,d)
+  if n==1 then
+    bpm=util.clamp(bpm+d*0.25,20,400)
   elseif n==2 then
     if shift==0 then
       level=util.clamp(level+d*0.01,0,1)
@@ -239,11 +254,14 @@ function redraw()
   screen_count=1-screen_count
   screen.clear()
   screen.move(10,10)
+  if shift==1 then
+    screen.move(13,13)
+  end
   blendertext=">|<"
   if screen_count==1 then
     blendertext="<|>"
   end
-  screen.text(blendertext.." blndr v0.4")
+  screen.text(blendertext.." blndr v0.5")
   if monitor_linein==0 then
     screen.move(78,20)
     screen.text("ext only")
@@ -274,10 +292,6 @@ function redraw()
   end
   screen.move(118,50)
   screen.text_right(string.format("%.2f",spin))
-  -- screen.move(10,60)
-  -- screen.text("multiplier: ")
-  -- screen.move(118,60)
-  -- screen.text_right(string.format("x%.2f",multipliers[mi]))
   screen.update()
 end
 
