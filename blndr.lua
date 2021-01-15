@@ -1,6 +1,6 @@
 --  ___-___
 --  |       |  blndr
---  |       |  v0.5
+--  |       |  v0.6
 --  |       |  a quantized delay
 --  |  >|<.  |  w/ time bending
 --  \.\|/./
@@ -229,8 +229,8 @@ function update_parms()
       softcut.pan_slew_time(i,60/(bpm*multipliers[mi]))
     end
     m.time=60/(bpm*multipliers[mi])/speeds[1]
-    redraw()
   end
+  redraw()
 end
 
 function enc(n,d)
@@ -238,7 +238,7 @@ function enc(n,d)
     bpm=util.clamp(bpm+d*0.25,20,400)
   elseif n==2 then
     if shift==0 then
-      params:set("level",params:get("level")+d*0.01)
+      params:set("delay level",params:get("delay level")+d*0.01)
     else
       params:set("feedback",params:get("feedback")+d*0.01)
     end
@@ -332,7 +332,7 @@ function redraw()
   if screen_count==1 then
     blendertext="<|>"
   end
-  screen.text(blendertext.." blndr v0.5")
+  screen.text(blendertext.." blndr v0.6")
   if monitor_linein==0 then
     screen.move(78,20)
     screen.text("ext only")
@@ -349,7 +349,7 @@ function redraw()
   if shift==0 then
     screen.text("level: ")
     screen.move(118,40)
-    screen.text_right(string.format("%.2f",params:get("level")))
+    screen.text_right(string.format("%.2f",params:get("delay level")))
   else
     screen.text("feedback: ")
     screen.move(118,40)
